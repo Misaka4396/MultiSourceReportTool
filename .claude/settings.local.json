@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(py --version)",
+      "Bash(ls /c/Python*)",
+      "Bash(py *)",
+      "Bash(pip install *)",
+      "Bash(pip list *)",
+      "Bash(where python *)",
+      "Read(//c/Users/misaCa/**)",
+      "Bash(pip3 install *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Read(//c/Users/misaka/anaconda3/**)",
+      "Read(//c/Python39/**)",
+      "Bash(conda info *)",
+      "Bash(E:/Anaconda3-2026/python.exe *)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m pip install pyinstaller PyQt5 requests beautifulsoup4 fpdf2 lxml)",
+      "Bash(\"E:/Anaconda3-2026/Scripts/pyinstaller.exe\" --onefile --windowed --name \"MultiSourceReportTool\" --add-data \"resources;resources\" main.py)",
+      "Bash(rm -rf build dist *.spec)",
+      "Bash(export PATH=\"E:/Anaconda3-2026/Library/bin:$PATH\")",
+      "Bash(\"E:/Anaconda3-2026/Scripts/pyinstaller.exe\" --onefile --windowed --name \"MultiSourceReportTool\" --add-data \"resources;resources\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Core_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Gui_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Widgets_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Network_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5PrintSupport_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Svg_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Xml_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5OpenGL_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/plugins/platforms/qwindows.dll;platforms\" --add-binary \"E:/Anaconda3-2026/Library/plugins/styles/qwindowsvistastyle.dll;styles\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qico.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qjpeg.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qsvg.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qgif.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qtiff.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qwebp.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/iconengines/qsvgicon.dll;iconengines\" main.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/pages/base_page.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/pages/consulting_page.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/pages/brokerage_page.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/pages/hs_code_page.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/pages/grey_lit_page.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" generate_icon.py)",
+      "Bash(\"E:/Anaconda3-2026/Scripts/pyinstaller.exe\" --onefile --windowed --name \"MultiSourceReportTool\" --icon \"resources/app_icon.ico\" --add-data \"resources;resources\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Core_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Gui_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Widgets_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Network_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5PrintSupport_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Svg_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5Xml_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/bin/Qt5OpenGL_conda.dll;.\" --add-binary \"E:/Anaconda3-2026/Library/plugins/platforms/qwindows.dll;platforms\" --add-binary \"E:/Anaconda3-2026/Library/plugins/styles/qwindowsvistastyle.dll;styles\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qico.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qjpeg.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qsvg.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qgif.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qtiff.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/imageformats/qwebp.dll;imageformats\" --add-binary \"E:/Anaconda3-2026/Library/plugins/iconengines/qsvgicon.dll;iconengines\" main.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/styles.py)",
+      "Bash(\"E:/Anaconda3-2026/python.exe\" -m py_compile ui/main_window.py)",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)"
+    ]
+  }
+}
