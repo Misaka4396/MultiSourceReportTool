@@ -32,8 +32,8 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("多源报告汇总推送工具")
 
-    # Set default font
-    font = QFont("Microsoft YaHei", 10)
+    # Set default font (XP-style Tahoma, SimSun fallback)
+    font = QFont("Tahoma", 9)
     app.setFont(font)
 
     window = MainWindow()

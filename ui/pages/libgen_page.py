@@ -93,7 +93,7 @@ class LibGenPage(BasePage):
             "（如 libgen.is, libgen.st, libgen.rs）。\n"
             "请遵守当地版权法规，仅下载您有权获取的内容。"
         )
-        notice.setStyleSheet("color: #94a3b8; font-size: 11px; padding-top: 8px;")
+        notice.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;")
         notice.setWordWrap(True)
         self.constraints_layout.addWidget(notice)
 

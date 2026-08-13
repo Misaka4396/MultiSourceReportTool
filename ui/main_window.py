@@ -1,17 +1,18 @@
-"""Main application window with navigation sidebar and stacked pages."""
+"""Main application window with XP-style navigation sidebar and stacked pages."""
 
 import os
 from datetime import datetime
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QStackedWidget, QStatusBar, QFrame, QDialog,
-    QCheckBox, QSpinBox, QLineEdit, QFileDialog, QMessageBox,
-    QButtonGroup, QGridLayout, QMenu, QGraphicsOpacityEffect,
+    QCheckBox, QLineEdit, QFileDialog, QMessageBox,
+    QButtonGroup, QGridLayout, QMenu, QTimeEdit, QGroupBox,
 )
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QSettings
-from PyQt5.QtGui import QFont, QPixmap, QPainter, QBrush, QPalette
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QPixmap, QBrush, QPalette
 
 from .styles import GLOBAL_STYLE
+from .daily_service import DailyReportService, MODULE_SPECS
 from .pages.consulting_page import ConsultingPage
 from .pages.brokerage_page import BrokeragePage
 from .pages.hs_code_page import HSCodePage
@@ -42,7 +43,7 @@ class NavButton(QPushButton):
         self.setObjectName("navButton")
         self.setCheckable(True)
         self.setCursor(Qt.PointingHandCursor)
-        self.setMinimumHeight(42)
+        self.setMinimumHeight(40)
         self._color = color
 
     def set_active(self, active: bool):
@@ -52,114 +53,136 @@ class NavButton(QPushButton):
         self.setChecked(active)
 
 
-class SchedulerDialog(QDialog):
-    """Dialog for configuring scheduled auto-fetch tasks."""
+class DailyReportDialog(QDialog):
+    """Configuration and status panel for the local daily report service."""
 
-    def __init__(self, parent=None):
+    def __init__(self, service: DailyReportService, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("定时任务设置")
-        self.setMinimumWidth(480)
-        self.setup_ui()
-        self._timer = None
+        self.service = service
+        self.setWindowTitle("日报本地生成服务")
+        self.setMinimumWidth(600)
+        self._build_ui()
+        self._refresh()
+        service.changed.connect(self._refresh)
 
-    def setup_ui(self):
+    def _build_ui(self):
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
+        layout.setSpacing(10)
+
+        # Schedule time
+        time_row = QHBoxLayout()
+        time_row.addWidget(QLabel("生成时间："))
+        self.time_edit = QTimeEdit(self.service.schedule_time)
+        self.time_edit.setDisplayFormat("HH:mm")
+        time_row.addWidget(self.time_edit)
+        time_row.addWidget(QLabel("（每天到点自动抓取并生成 TXT + PDF 日报）"))
+        time_row.addStretch()
+        layout.addLayout(time_row)
 
         # Module selection
-        layout.addWidget(QLabel("选择自动执行的模块："))
-        self.module_checks = {}
+        layout.addWidget(QLabel("选取信息源模块："))
+        self.module_checks: dict[str, QCheckBox] = {}
         grid = QGridLayout()
-        for i, (key, name, emoji, _) in enumerate(NAV_ITEMS):
-            cb = QCheckBox(f"{emoji} {name}")
-            cb.setChecked(True)
+        for i, (key, spec) in enumerate(MODULE_SPECS.items()):
+            cb = QCheckBox(spec["name"])
+            cb.setChecked(key in self.service.module_keys)
             self.module_checks[key] = cb
             grid.addWidget(cb, i // 2, i % 2)
         layout.addLayout(grid)
 
-        # Interval
-        int_row = QHBoxLayout()
-        int_row.addWidget(QLabel("执行间隔："))
-        self.interval_spin = QSpinBox()
-        self.interval_spin.setRange(1, 72)
-        self.interval_spin.setValue(6)
-        self.interval_spin.setSuffix(" 小时")
-        int_row.addWidget(self.interval_spin)
-        int_row.addStretch()
-        layout.addLayout(int_row)
-
         # Output directory
         dir_row = QHBoxLayout()
         dir_row.addWidget(QLabel("输出目录："))
-        self.dir_edit = QLineEdit()
-        self.dir_edit.setText(self._default_dir())
+        self.dir_edit = QLineEdit(self.service.output_dir)
         dir_row.addWidget(self.dir_edit)
         browse_btn = QPushButton("浏览...")
         browse_btn.setObjectName("secondaryButton")
-        browse_btn.clicked.connect(lambda: self._browse_dir())
+        browse_btn.clicked.connect(self._browse_dir)
         dir_row.addWidget(browse_btn)
         layout.addLayout(dir_row)
 
-        # Buttons
+        # Action buttons
         btn_row = QHBoxLayout()
-        self.start_btn = QPushButton("启动定时任务")
+        self.start_btn = QPushButton("启动服务")
         self.start_btn.setObjectName("successButton")
-        self.start_btn.clicked.connect(self._on_start)
-        self.stop_btn = QPushButton("停止")
+        self.stop_btn = QPushButton("停止服务")
         self.stop_btn.setObjectName("dangerButton")
-        self.stop_btn.setEnabled(False)
+        self.run_btn = QPushButton("立即生成一次")
+        self.run_btn.setObjectName("secondaryButton")
+        self.start_btn.clicked.connect(self._on_start)
         self.stop_btn.clicked.connect(self._on_stop)
-        btn_row.addStretch()
+        self.run_btn.clicked.connect(self._on_run_now)
         btn_row.addWidget(self.start_btn)
         btn_row.addWidget(self.stop_btn)
+        btn_row.addWidget(self.run_btn)
+        btn_row.addStretch()
         layout.addLayout(btn_row)
 
-        # Status
-        self.status_label = QLabel("状态：未启动")
-        self.status_label.setStyleSheet("color: #64748b;")
-        layout.addWidget(self.status_label)
+        # Status panel
+        panel = QGroupBox("服务状态")
+        p = QVBoxLayout(panel)
+        p.setSpacing(4)
+        self.state_label = QLabel()
+        self.time_label = QLabel()
+        self.status_label = QLabel()
+        self.paths_label = QLabel()
+        self.paths_label.setWordWrap(True)
+        self.paths_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        for w in (self.state_label, self.time_label, self.status_label, self.paths_label):
+            w.setStyleSheet("background: transparent;")
+            p.addWidget(w)
+        layout.addWidget(panel)
 
-    def _default_dir(self):
-        import os
-        return os.path.expanduser("~/Desktop")
+    def _apply_config(self):
+        self.service.schedule_time = self.time_edit.time()
+        self.service.module_keys = [k for k, cb in self.module_checks.items() if cb.isChecked()]
+        out = self.dir_edit.text().strip()
+        if out:
+            self.service.output_dir = out
+
+    def _on_start(self):
+        self._apply_config()
+        if not self.service.module_keys:
+            QMessageBox.warning(self, "提示", "请至少选择一个信息源模块。")
+            return
+        try:
+            os.makedirs(self.service.output_dir, exist_ok=True)
+        except OSError as exc:
+            QMessageBox.warning(self, "路径错误", f"无法创建输出目录：{exc}")
+            return
+        self.service.start()
+
+    def _on_stop(self):
+        self.service.stop()
+
+    def _on_run_now(self):
+        self._apply_config()
+        if not self.service.module_keys:
+            QMessageBox.warning(self, "提示", "请至少选择一个信息源模块。")
+            return
+        try:
+            os.makedirs(self.service.output_dir, exist_ok=True)
+        except OSError as exc:
+            QMessageBox.warning(self, "路径错误", f"无法创建输出目录：{exc}")
+            return
+        self.service.run_now()
 
     def _browse_dir(self):
         d = QFileDialog.getExistingDirectory(self, "选择输出目录", self.dir_edit.text())
         if d:
             self.dir_edit.setText(d)
 
-    def _on_start(self):
-        checked = [k for k, cb in self.module_checks.items() if cb.isChecked()]
-        if not checked:
-            QMessageBox.warning(self, "提示", "请至少选择一个模块。")
-            return
-        interval_ms = self.interval_spin.value() * 3600 * 1000
-        self._timer = QTimer(self)
-        self._timer.timeout.connect(lambda: self._execute_tasks(checked))
-        self._timer.start(interval_ms)
-        self.start_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
-        self.status_label.setText(
-            f"状态：运行中 — 每{self.interval_spin.value()}小时执行一次"
-        )
-        self.status_label.setStyleSheet("color: #10b981; font-weight: bold;")
-
-    def _on_stop(self):
-        if self._timer:
-            self._timer.stop()
-            self._timer = None
-        self.start_btn.setEnabled(True)
-        self.stop_btn.setEnabled(False)
-        self.status_label.setText("状态：已停止")
-        self.status_label.setStyleSheet("color: #64748b;")
-
-    def _execute_tasks(self, modules: list[str]):
-        """Placeholder for scheduled task execution."""
-        output_dir = self.dir_edit.text()
-        self.status_label.setText(
-            f"状态：上次执行 {datetime.now().strftime('%H:%M:%S')} — "
-            f"已保存至 {output_dir}"
-        )
+    def _refresh(self):
+        self.state_label.setText(f"运行状态：{self.service.state}")
+        self.time_label.setText(f"上次生成时间：{self.service.last_run_time or '—'}")
+        self.status_label.setText(f"上次状态：{self.service.last_status}")
+        if self.service.last_paths:
+            self.paths_label.setText("生成文件：\n" + "\n".join(self.service.last_paths))
+        else:
+            self.paths_label.setText("生成文件：—")
+        running = self.service.is_running()
+        self.start_btn.setEnabled(not running)
+        self.stop_btn.setEnabled(running)
 
 
 class MainWindow(QMainWindow):
@@ -171,6 +194,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 780)
         self.setStyleSheet(GLOBAL_STYLE)
         self._bg_image_path = ""
+        self.daily_service = DailyReportService(self)
         self._build_ui()
         self._start_clock()
 
@@ -181,13 +205,14 @@ class MainWindow(QMainWindow):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # --- Top bar ---
+        # --- Top bar (XP title bar) ---
         top_bar = QFrame()
         top_bar.setObjectName("topBar")
         top_layout = QHBoxLayout(top_bar)
-        top_layout.setContentsMargins(20, 8, 20, 8)
+        top_layout.setContentsMargins(12, 4, 8, 4)
+        top_layout.setSpacing(8)
 
-        title = QLabel("多源报告汇总推送工具")
+        title = QLabel("  多源报告汇总推送工具")
         title.setObjectName("appTitle")
         top_layout.addWidget(title)
 
@@ -204,6 +229,14 @@ class MainWindow(QMainWindow):
         self.time_label.setObjectName("timeLabel")
         top_layout.addWidget(self.time_label)
 
+        # XP-style caption buttons (functional)
+        self.min_btn = self._caption_button("–", "captionButton", self.showMinimized)
+        self.max_btn = self._caption_button("□", "captionButton", self._toggle_max)
+        self.close_btn = self._caption_button("✕", "captionCloseButton", self.close)
+        top_layout.addWidget(self.min_btn)
+        top_layout.addWidget(self.max_btn)
+        top_layout.addWidget(self.close_btn)
+
         root.addWidget(top_bar)
 
         # --- Main content area: sidebar + pages ---
@@ -211,11 +244,11 @@ class MainWindow(QMainWindow):
         content_row.setContentsMargins(0, 0, 0, 0)
         content_row.setSpacing(0)
 
-        # Sidebar
+        # Sidebar (XP task pane)
         sidebar = QFrame()
         sidebar.setObjectName("navSidebar")
         sidebar_layout = QVBoxLayout(sidebar)
-        sidebar_layout.setContentsMargins(0, 8, 0, 8)
+        sidebar_layout.setContentsMargins(0, 6, 0, 6)
         sidebar_layout.setSpacing(2)
 
         nav_header = QLabel("功  能  模  块")
@@ -239,18 +272,17 @@ class MainWindow(QMainWindow):
 
         sidebar_layout.addStretch()
 
-        # Scheduler button at bottom of sidebar
-        sched_btn = QPushButton("  ⏰  定时任务")
-        sched_btn.setObjectName("navButton")
-        sched_btn.setCursor(Qt.PointingHandCursor)
-        sched_btn.clicked.connect(self._open_scheduler)
-        sidebar_layout.addWidget(sched_btn)
+        # Daily report service button at bottom of sidebar
+        daily_btn = QPushButton("  ⏰  日报服务")
+        daily_btn.setObjectName("navButton")
+        daily_btn.setCursor(Qt.PointingHandCursor)
+        daily_btn.clicked.connect(self._open_daily_service)
+        sidebar_layout.addWidget(daily_btn)
 
         content_row.addWidget(sidebar)
 
         # Stacked widget for pages
         self.stack = QStackedWidget()
-        self.stack.setStyleSheet("background-color: #f8fafc;")
 
         # Create all pages
         self.pages = {}
@@ -281,6 +313,20 @@ class MainWindow(QMainWindow):
         # Default to first page
         self._switch_page("consulting")
 
+    def _caption_button(self, text: str, name: str, slot) -> QPushButton:
+        btn = QPushButton(text)
+        btn.setObjectName(name)
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.setFocusPolicy(Qt.NoFocus)
+        btn.clicked.connect(slot)
+        return btn
+
+    def _toggle_max(self):
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
+
     def _switch_page(self, key: str):
         """Switch the stacked widget to the given page key."""
         if key in self.pages:
@@ -303,32 +349,14 @@ class MainWindow(QMainWindow):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.time_label.setText(now)
 
-    def _open_scheduler(self):
-        """Open the scheduler dialog."""
-        dlg = SchedulerDialog(self)
+    def _open_daily_service(self):
+        """Open the daily report service dialog."""
+        dlg = DailyReportDialog(self.daily_service, self)
         dlg.exec_()
 
     def _show_bg_menu(self):
         """Show background settings dropdown menu."""
         menu = QMenu(self.bg_btn)
-        menu.setStyleSheet("""
-            QMenu {
-                background-color: #1e293b;
-                border: 1px solid #334155;
-                border-radius: 8px;
-                padding: 6px;
-            }
-            QMenu::item {
-                color: #f1f5f9;
-                padding: 10px 28px;
-                border-radius: 6px;
-                font-size: 13px;
-            }
-            QMenu::item:selected {
-                background-color: #3b82f6;
-                color: #ffffff;
-            }
-        """)
 
         choose_action = menu.addAction("  选择背景图片...")
         choose_action.triggered.connect(self._choose_background)
@@ -376,7 +404,6 @@ class MainWindow(QMainWindow):
         else:
             self.stack.setAutoFillBackground(False)
             self.stack.setPalette(self.style().standardPalette())
-            self.stack.setStyleSheet("QStackedWidget { background-color: #f8fafc; }")
 
     def resizeEvent(self, event):
         """Re-apply background on window resize for proper scaling."""

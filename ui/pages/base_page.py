@@ -177,24 +177,6 @@ class BasePage(QWidget):
         self.action_btn.clicked.connect(self.on_action_clicked)
 
         menu = QMenu(self.action_btn)
-        menu.setStyleSheet("""
-            QMenu {
-                background-color: #1e293b;
-                border: 1px solid #334155;
-                border-radius: 8px;
-                padding: 6px;
-            }
-            QMenu::item {
-                color: #f1f5f9;
-                padding: 10px 28px;
-                border-radius: 6px;
-                font-size: 13px;
-            }
-            QMenu::item:selected {
-                background-color: #3b82f6;
-                color: #ffffff;
-            }
-        """)
         direct_action = menu.addAction("直接生成报告（示例数据）")
         direct_action.triggered.connect(self.on_direct_report)
         self.action_btn.setMenu(menu)

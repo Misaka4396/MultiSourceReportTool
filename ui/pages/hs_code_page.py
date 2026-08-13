@@ -92,7 +92,7 @@ class HSCodePage(BasePage):
 
         # Note about data source
         note = QLabel("注意：贸易数据为示例数据，基于UN Comtrade公开统计口径模拟。实际精确数据需通过官方API获取。")
-        note.setStyleSheet("color: #94a3b8; font-size: 11px; padding-top: 4px;")
+        note.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 4px; background: transparent;")
         note.setWordWrap(True)
         self.constraints_layout.addWidget(note)
 

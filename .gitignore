@@ -6,6 +6,12 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Temp verification artifacts
+_verify_out/
+_smoke_out/
+_verify_pdf.py
+_smoke_test.py
+
 # IDE
 .vscode/
 .idea/

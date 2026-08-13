@@ -1,7 +1,18 @@
 """TXT report generator with clean formatting."""
 
 import os
+import re
 from datetime import datetime
+
+_ILLEGAL_FILENAME = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def _safe_stem(stem: str, max_len: int = 80) -> str:
+    stem = _ILLEGAL_FILENAME.sub("_", stem or "")
+    stem = " ".join(stem.split())
+    if len(stem) > max_len:
+        stem = stem[:max_len].rstrip()
+    return stem or "report"
 
 
 def generate_txt_report(
@@ -11,6 +22,7 @@ def generate_txt_report(
     selected_fields: list[str],
     field_labels: dict[str, str],
     extra_notes: str = "",
+    filename_stem: str = "",
 ) -> str:
     """Generate a formatted TXT report.
 
@@ -21,12 +33,17 @@ def generate_txt_report(
         selected_fields: List of field keys to include
         field_labels: Mapping of field keys to display labels
         extra_notes: Optional extra notes to append
+        filename_stem: Optional explicit file name stem (without extension)
 
     Returns:
         Path to the generated file
     """
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{title.replace(' ', '_')}_{timestamp}.txt"
+    if not filename_stem:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename_stem = _safe_stem(f"{title.replace(' ', '_')}_{timestamp}")
+    else:
+        filename_stem = _safe_stem(filename_stem)
+    filename = f"{filename_stem}.txt"
     filepath = os.path.join(output_dir, filename)
 
     lines = []

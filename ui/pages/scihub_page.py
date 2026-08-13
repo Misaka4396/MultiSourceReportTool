@@ -75,7 +75,7 @@ class SciHubPage(BasePage):
             "实际PDF下载需用户自行通过合法渠道（机构订阅、开放获取等）获取。"
             "本工具不存储或分发受版权保护的文献全文。"
         )
-        notice.setStyleSheet("color: #94a3b8; font-size: 11px; padding-top: 8px;")
+        notice.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;")
         notice.setWordWrap(True)
         self.constraints_layout.addWidget(notice)
 
