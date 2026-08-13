@@ -1,10 +1,11 @@
 """Page 6: Sci-Hub / DOI downloader."""
 
-from PyQt5.QtWidgets import QLabel, QTextEdit, QHBoxLayout
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QLabel, QTextEdit
+
+from fetchers.scihub import MOCK_DOI_DATA, SciHubFetcher
 
 from .base_page import BasePage
-from fetchers.scihub import SciHubFetcher, MOCK_DOI_DATA
 
 
 class _FetchThread(QThread):
@@ -39,7 +40,9 @@ class SciHubPage(BasePage):
         self.report_title = "文献信息检索报告"
         self.report_subtitle = "DOI Metadata Lookup via Crossref API"
         self.mock_note = "注意：部分DOI查询返回示例数据。"
-        self.extra_result_msg = "\n\n提示：可通过 Sci-Hub 镜像获取全文。常用域名：sci-hub.se, sci-hub.st, sci-hub.ru"
+        self.extra_result_msg = (
+            "\n\n提示：可通过 Sci-Hub 镜像获取全文。常用域名：sci-hub.se, sci-hub.st, sci-hub.ru"
+        )
 
     def get_all_fields(self):
         fields = dict(self.COMMON_FIELDS)
@@ -75,7 +78,9 @@ class SciHubPage(BasePage):
             "实际PDF下载需用户自行通过合法渠道（机构订阅、开放获取等）获取。"
             "本工具不存储或分发受版权保护的文献全文。"
         )
-        notice.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;")
+        notice.setStyleSheet(
+            "color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;"
+        )
         notice.setWordWrap(True)
         self.constraints_layout.addWidget(notice)
 
@@ -95,7 +100,7 @@ class SciHubPage(BasePage):
 
         self.thread = _FetchThread(doi_list)
         self.thread.progress.connect(self.set_progress)
-        self.thread.finished.connect(lambda data: self.generate_report(
-            data, any(r.get("is_mock", False) for r in data)))
+        self.thread.finished.connect(
+            lambda data: self.generate_report(data, any(r.get("is_mock", False) for r in data))
+        )
         self.thread.start()
-

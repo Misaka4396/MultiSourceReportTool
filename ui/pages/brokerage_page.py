@@ -1,10 +1,11 @@
 """Page 2: Brokerage research reports from East Money."""
 
-from PyQt5.QtWidgets import QLabel, QComboBox, QDateEdit, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import QDate, QThread, pyqtSignal
+from PyQt5.QtWidgets import QComboBox, QDateEdit, QHBoxLayout, QLabel, QLineEdit
+
+from fetchers.brokerage import MOCK_BROKERAGE_DATA, BrokerageFetcher
 
 from .base_page import BasePage
-from fetchers.brokerage import BrokerageFetcher, MOCK_BROKERAGE_DATA
 
 
 class _FetchThread(QThread):
@@ -54,7 +55,9 @@ class BrokeragePage(BasePage):
     def _build_constraints(self):
         # Industry
         self.industry_combo = QComboBox()
-        self.industry_combo.addItems(["全部", "电子", "医药", "新能源", "消费", "汽车", "化工", "计算机"])
+        self.industry_combo.addItems(
+            ["全部", "电子", "医药", "新能源", "消费", "汽车", "化工", "计算机"]
+        )
         self.add_constraint_row("行业选择：", self.industry_combo)
 
         # Rating
@@ -101,4 +104,3 @@ class BrokeragePage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

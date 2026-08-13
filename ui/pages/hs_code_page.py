@@ -1,10 +1,11 @@
 """Page 3: HS Code trade data tracker."""
 
-from PyQt5.QtWidgets import QLabel, QComboBox, QDateEdit, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import QDate, QThread, pyqtSignal
+from PyQt5.QtWidgets import QComboBox, QDateEdit, QHBoxLayout, QLabel, QLineEdit
+
+from fetchers.hs_code import MOCK_TRADE_DATA, HSCodeFetcher
 
 from .base_page import BasePage
-from fetchers.hs_code import HSCodeFetcher, MOCK_TRADE_DATA
 
 
 class _FetchThread(QThread):
@@ -58,11 +59,18 @@ class HSCodePage(BasePage):
     def _build_constraints(self):
         # Country
         self.country_combo = QComboBox()
-        self.country_combo.addItems([
-            "中国 (China)", "美国 (USA)", "德国 (Germany)",
-            "越南 (Vietnam)", "印度 (India)", "日本 (Japan)",
-            "韩国 (Korea)", "马来西亚 (Malaysia)",
-        ])
+        self.country_combo.addItems(
+            [
+                "中国 (China)",
+                "美国 (USA)",
+                "德国 (Germany)",
+                "越南 (Vietnam)",
+                "印度 (India)",
+                "日本 (Japan)",
+                "韩国 (Korea)",
+                "马来西亚 (Malaysia)",
+            ]
+        )
         self.add_constraint_row("选择国家：", self.country_combo)
 
         # HS code query
@@ -91,8 +99,12 @@ class HSCodePage(BasePage):
         self.constraints_layout.addLayout(date_row)
 
         # Note about data source
-        note = QLabel("注意：贸易数据为示例数据，基于UN Comtrade公开统计口径模拟。实际精确数据需通过官方API获取。")
-        note.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 4px; background: transparent;")
+        note = QLabel(
+            "注意：贸易数据为示例数据，基于UN Comtrade公开统计口径模拟。实际精确数据需通过官方API获取。"
+        )
+        note.setStyleSheet(
+            "color: #5A5A5A; font-size: 11px; padding-top: 4px; background: transparent;"
+        )
         note.setWordWrap(True)
         self.constraints_layout.addWidget(note)
 
@@ -115,4 +127,3 @@ class HSCodePage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

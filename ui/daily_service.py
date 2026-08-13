@@ -10,18 +10,17 @@ from __future__ import annotations
 import os
 from datetime import datetime, timedelta
 
-from PyQt5.QtCore import QObject, QThread, QTimer, QTime, pyqtSignal
+from PyQt5.QtCore import QObject, QThread, QTime, QTimer, pyqtSignal
 
-from report.txt_writer import generate_txt_report
-from report.pdf_writer import generate_daily_pdf_report
-
-from fetchers.consulting import ConsultingFetcher
 from fetchers.brokerage import BrokerageFetcher
-from fetchers.hs_code import HSCodeFetcher
+from fetchers.consulting import ConsultingFetcher
 from fetchers.grey_lit import GreyLiteratureFetcher
+from fetchers.hs_code import HSCodeFetcher
+from fetchers.libgen import LibGenFetcher
 from fetchers.preprint import PreprintFetcher
 from fetchers.scihub import SciHubFetcher
-from fetchers.libgen import LibGenFetcher
+from report.pdf_writer import generate_daily_pdf_report
+from report.txt_writer import generate_txt_report
 
 COMMON_FIELDS = {
     "module": "来源模块",
@@ -56,30 +55,44 @@ def _fetch_consulting():
     f = ConsultingFetcher()
     return f.fetch(
         firms=["mckinsey", "bcg", "roland_berger", "accenture"],
-        language="中文", start_date=d["start_6m"], end_date=d["end"],
-        keywords="", keyword_logic="OR",
+        language="中文",
+        start_date=d["start_6m"],
+        end_date=d["end"],
+        keywords="",
+        keyword_logic="OR",
     )
 
 
 def _fetch_brokerage():
     d = _default_dates()
     f = BrokerageFetcher()
-    return f.fetch(industry="全部", rating="全部",
-                   start_date=d["start_6m"], end_date=d["end"], keywords="")
+    return f.fetch(
+        industry="全部", rating="全部", start_date=d["start_6m"], end_date=d["end"], keywords=""
+    )
 
 
 def _fetch_hscode():
     d = _default_dates()
     f = HSCodeFetcher()
-    return f.fetch(country="中国 (China)", hs_query="", trade_type="双边贸易 (Bilateral)",
-                   start_date=d["start_1y"], end_date=d["end"])
+    return f.fetch(
+        country="中国 (China)",
+        hs_query="",
+        trade_type="双边贸易 (Bilateral)",
+        start_date=d["start_1y"],
+        end_date=d["end"],
+    )
 
 
 def _fetch_greylit():
     d = _default_dates()
     f = GreyLiteratureFetcher()
-    return f.fetch(keywords="", domains=["worldbank.org", "rand.org"], file_types=["pdf"],
-                   start_date=d["start_2024"], end_date=d["end"])
+    return f.fetch(
+        keywords="",
+        domains=["worldbank.org", "rand.org"],
+        file_types=["pdf"],
+        start_date=d["start_2024"],
+        end_date=d["end"],
+    )
 
 
 def _fetch_preprint():
@@ -89,43 +102,91 @@ def _fetch_preprint():
 
 def _fetch_scihub():
     f = SciHubFetcher()
-    data = f.fetch([
-        "10.1038/nature12373",
-        "10.1126/science.aad0919",
-        "10.1016/j.cell.2020.02.007",
-    ])
+    data = f.fetch(
+        [
+            "10.1038/nature12373",
+            "10.1126/science.aad0919",
+            "10.1016/j.cell.2020.02.007",
+        ]
+    )
     return data, any(r.get("is_mock", False) for r in data)
 
 
 def _fetch_libgen():
     f = LibGenFetcher()
-    return f.fetch(title="artificial intelligence", author="", isbn="",
-                   language="全部", formats=["pdf", "epub", "mobi"])
+    return f.fetch(
+        title="artificial intelligence",
+        author="",
+        isbn="",
+        language="全部",
+        formats=["pdf", "epub", "mobi"],
+    )
 
 
 MODULE_SPECS: dict[str, dict] = {
-    "consulting": {"name": "顶级咨询公司报告", "fetch": _fetch_consulting,
-                   "fields": {"source": "来源机构"}},
-    "brokerage": {"name": "券商研报", "fetch": _fetch_brokerage,
-                  "fields": {"analyst": "分析师", "rating": "评级",
-                             "supply_chain": "产业链图谱", "industry": "所属行业"}},
-    "hscode": {"name": "海关编码查询", "fetch": _fetch_hscode,
-               "fields": {"hs_code": "HS编码", "country": "国家/地区",
-                          "trade_type": "贸易类型", "trade_value": "贸易额(美元)",
-                          "quantity": "数量", "yoy_change": "同比变化",
-                          "top_partners": "前十贸易伙伴", "flow_desc": "供应链流向描述"}},
-    "greylit": {"name": "灰色文献抓取", "fetch": _fetch_greylit,
-                "fields": {"organization": "出版机构", "file_type": "文件类型"}},
-    "preprint": {"name": "预印本检索", "fetch": _fetch_preprint,
-                 "fields": {"source": "来源平台", "category": "学科分类"}},
-    "scihub": {"name": "Sci-Hub 下载器", "fetch": _fetch_scihub,
-               "fields": {"doi": "DOI", "journal": "期刊", "year": "出版年",
-                          "publisher": "出版社", "download_status": "下载状态",
-                          "mirror_hint": "镜像提示"}},
-    "libgen": {"name": "LibGen 电子书", "fetch": _fetch_libgen,
-               "fields": {"publisher": "出版社", "year": "出版年份", "isbn": "ISBN",
-                          "size": "文件大小", "mirrors": "下载镜像",
-                          "description": "内容简介"}},
+    "consulting": {
+        "name": "顶级咨询公司报告",
+        "fetch": _fetch_consulting,
+        "fields": {"source": "来源机构"},
+    },
+    "brokerage": {
+        "name": "券商研报",
+        "fetch": _fetch_brokerage,
+        "fields": {
+            "analyst": "分析师",
+            "rating": "评级",
+            "supply_chain": "产业链图谱",
+            "industry": "所属行业",
+        },
+    },
+    "hscode": {
+        "name": "海关编码查询",
+        "fetch": _fetch_hscode,
+        "fields": {
+            "hs_code": "HS编码",
+            "country": "国家/地区",
+            "trade_type": "贸易类型",
+            "trade_value": "贸易额(美元)",
+            "quantity": "数量",
+            "yoy_change": "同比变化",
+            "top_partners": "前十贸易伙伴",
+            "flow_desc": "供应链流向描述",
+        },
+    },
+    "greylit": {
+        "name": "灰色文献抓取",
+        "fetch": _fetch_greylit,
+        "fields": {"organization": "出版机构", "file_type": "文件类型"},
+    },
+    "preprint": {
+        "name": "预印本检索",
+        "fetch": _fetch_preprint,
+        "fields": {"source": "来源平台", "category": "学科分类"},
+    },
+    "scihub": {
+        "name": "Sci-Hub 下载器",
+        "fetch": _fetch_scihub,
+        "fields": {
+            "doi": "DOI",
+            "journal": "期刊",
+            "year": "出版年",
+            "publisher": "出版社",
+            "download_status": "下载状态",
+            "mirror_hint": "镜像提示",
+        },
+    },
+    "libgen": {
+        "name": "LibGen 电子书",
+        "fetch": _fetch_libgen,
+        "fields": {
+            "publisher": "出版社",
+            "year": "出版年份",
+            "isbn": "ISBN",
+            "size": "文件大小",
+            "mirrors": "下载镜像",
+            "description": "内容简介",
+        },
+    },
 }
 
 
@@ -186,14 +247,20 @@ class DailyReportWorker(QThread):
 
         try:
             txt_path = generate_txt_report(
-                title=title, data=flat_items, output_dir=self.output_dir,
-                selected_fields=selected_fields, field_labels=field_labels,
-                extra_notes="由本地日报生成服务自动生成。", filename_stem=stem,
+                title=title,
+                data=flat_items,
+                output_dir=self.output_dir,
+                selected_fields=selected_fields,
+                field_labels=field_labels,
+                extra_notes="由本地日报生成服务自动生成。",
+                filename_stem=stem,
             )
             self.progress.emit("正在生成 PDF 日报 ...")
             pdf_path = generate_daily_pdf_report(
-                title=title, subtitle="Daily Intelligence Digest",
-                module_sections=module_sections, output_dir=self.output_dir,
+                title=title,
+                subtitle="Daily Intelligence Digest",
+                module_sections=module_sections,
+                output_dir=self.output_dir,
                 filename_stem=stem,
             )
         except Exception as exc:  # noqa: BLE001
@@ -256,9 +323,9 @@ class DailyReportService(QObject):
         if self._last_generated_on == now.strftime("%Y-%m-%d"):
             return
         t = now.time()
-        due = (t.hour > self.schedule_time.hour()
-               or (t.hour == self.schedule_time.hour()
-                   and t.minute >= self.schedule_time.minute()))
+        due = t.hour > self.schedule_time.hour() or (
+            t.hour == self.schedule_time.hour() and t.minute >= self.schedule_time.minute()
+        )
         if due:
             self.run_now()
 

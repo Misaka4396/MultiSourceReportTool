@@ -2,6 +2,26 @@
 
 本项目使用 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式。
 
+## [v1.2.1] - 2026-08-13
+
+### 新增
+- feat: 文章抓取模块（`article_grab/`）— trafilatura + httpx 正文提取（标题/作者/日期/站点/正文），请求重试 + 真实浏览器头，文件名净化（防路径穿越）
+- feat: **维基百科 API 适配器** — 词条页 HTML 反爬 403 时自动走官方 REST API（支持 zh/en/ja/fr/de/ru/es 7 语言）
+- feat: 文章抓取 PDF 日报（`article_grab/grabber.py --pdf`）— 封面/目录/分节，中文字体自动适配，防文字挤压排版（中英分段换行 + 超长 URL 逐字符硬断）
+- test: 26 个 pytest 用例（单元 + 集成，含 PDF 重叠/溢出逐词检测、维基 API 适配器、HTTP mock 替身）
+
+### 工程化
+- build: `pyproject.toml`（ruff/black/mypy strict/pytest + setuptools 显式模块声明）
+- build: `.pre-commit-config.yaml` 提交前自动检查
+- build: `.github/workflows/ci.yml` — GitHub Actions（Python 3.10/3.13 矩阵：lint→format→mypy→test+cov≥80%）
+
+### 修复
+- fix: trafilatura 2.2 API 变更（`extract_metadata` 参数 `url`→`default_url`）
+- fix: 正文丢失 — 按「原文链接」内容匹配回填元数据
+- fix: PDF 换行符缺字形 — 按段落渲染正文
+- fix: 裸 `except Exception: pass` 吞异常 — 引入 logging + 收窄异常类型
+- fix: 中文字体跨平台查找（Windows/Linux/macOS 候选），CI 安装 fonts-noto-cjk
+
 ## [v1.2.0] - 2026-08-13
 
 ### 新增

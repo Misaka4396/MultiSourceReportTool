@@ -1,17 +1,24 @@
 """Page 1: Top consulting firm reports."""
 
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox,
-    QComboBox, QDateEdit, QLineEdit, QRadioButton, QButtonGroup,
-)
 from PyQt5.QtCore import QDate, QThread, pyqtSignal
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDateEdit,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QRadioButton,
+)
+
+from fetchers.consulting import MOCK_CONSULTING_DATA, ConsultingFetcher
 
 from .base_page import BasePage
-from fetchers.consulting import ConsultingFetcher, MOCK_CONSULTING_DATA
 
 
 class _FetchThread(QThread):
     """Worker thread for fetching data."""
+
     progress = pyqtSignal(str)
     finished = pyqtSignal(list, bool)
 
@@ -58,8 +65,12 @@ class ConsultingPage(BasePage):
 
     def _build_constraints(self):
         # Company selection
-        companies = [("mckinsey", "McKinsey 麦肯锡"), ("bcg", "BCG 波士顿咨询"),
-                     ("roland_berger", "Roland Berger 罗兰贝格"), ("accenture", "Accenture 埃森哲")]
+        companies = [
+            ("mckinsey", "McKinsey 麦肯锡"),
+            ("bcg", "BCG 波士顿咨询"),
+            ("roland_berger", "Roland Berger 罗兰贝格"),
+            ("accenture", "Accenture 埃森哲"),
+        ]
         self.firm_checkboxes = {}
         firm_row = QHBoxLayout()
         firm_row.addWidget(QLabel("选择公司："))
@@ -130,4 +141,3 @@ class ConsultingPage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

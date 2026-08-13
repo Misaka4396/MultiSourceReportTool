@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import time
 import random
+import time
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -19,12 +20,14 @@ class BaseFetcher:
 
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": random.choice(USER_AGENTS),
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Accept-Encoding": "gzip, deflate",
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": random.choice(USER_AGENTS),
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                "Accept-Encoding": "gzip, deflate",
+            }
+        )
         self.last_request_time = 0
         self.min_delay = 1.5  # seconds between requests
         self.use_mock = False
@@ -42,14 +45,14 @@ class BaseFetcher:
         try:
             resp = self.session.get(url, timeout=timeout)
             resp.raise_for_status()
-            resp.encoding = resp.apparent_encoding or 'utf-8'
+            resp.encoding = resp.apparent_encoding or "utf-8"
             return resp.text
         except Exception:
             return None
 
     def parse_html(self, html: str) -> BeautifulSoup:
         """Parse HTML string into BeautifulSoup object."""
-        return BeautifulSoup(html, 'lxml')
+        return BeautifulSoup(html, "lxml")
 
     def safe_fetch(self, url: str, timeout: int = 15) -> str | None:
         """Fetch with fallback — sets use_mock flag on failure."""

@@ -15,6 +15,7 @@ import os
 import re
 import sys
 from datetime import datetime
+
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
@@ -52,11 +53,7 @@ def _find_chinese_font() -> str:
 
 def _is_cjk(ch: str) -> bool:
     cp = ord(ch)
-    return (
-        0x2E80 <= cp <= 0x9FFF
-        or 0xF900 <= cp <= 0xFAFF
-        or 0xFF00 <= cp <= 0xFFEF
-    )
+    return 0x2E80 <= cp <= 0x9FFF or 0xF900 <= cp <= 0xFAFF or 0xFF00 <= cp <= 0xFFEF
 
 
 class AcademicPDF(FPDF):
@@ -206,8 +203,14 @@ class AcademicPDF(FPDF):
         self._reapply_style()
         self.set_font(self.font_name, "I", 8)
         self.set_text_color(120, 120, 120)
-        self.cell(0, 6, self._truncate(self.report_title, self.content_width()),
-                  align="C", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.cell(
+            0,
+            6,
+            self._truncate(self.report_title, self.content_width()),
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
         self.set_draw_color(200, 200, 200)
         self.set_line_width(0.2)
         self.line(self.l_margin, self.get_y(), self.w - self.r_margin, self.get_y())
@@ -224,8 +227,14 @@ class AcademicPDF(FPDF):
         self.ln(2)
         self.set_font(self.font_name, "", 7)
         self.set_text_color(150, 150, 150)
-        self.cell(0, 6, f"{self.page_no()}  |  多源报告汇总工具生成", align="C",
-                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.cell(
+            0,
+            6,
+            f"{self.page_no()}  |  多源报告汇总工具生成",
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
 
     # ------------------------------------------------------------------ #
     # cover / toc
@@ -262,8 +271,14 @@ class AcademicPDF(FPDF):
             self.ln(8)
 
         self._set_style("", 12, self.MUTED_COLOR)
-        self.cell(0, 8, f"生成日期：{date_str or datetime.now().strftime('%Y-%m-%d')}",
-                  align="C", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.cell(
+            0,
+            8,
+            f"生成日期：{date_str or datetime.now().strftime('%Y-%m-%d')}",
+            align="C",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
 
         # Bottom XP-blue bar
         self.set_fill_color(*self.XP_BLUE)
@@ -293,7 +308,10 @@ class AcademicPDF(FPDF):
             display = title
             if self.get_string_width(display) > left_w - 4:
                 ell = "..."
-                while self.get_string_width(display) > left_w - 4 - self.get_string_width(ell) and len(display) > 1:
+                while (
+                    self.get_string_width(display) > left_w - 4 - self.get_string_width(ell)
+                    and len(display) > 1
+                ):
                     display = display[:-1]
                 display = display.rstrip() + ell
 
@@ -336,9 +354,14 @@ class AcademicPDF(FPDF):
             self.ln(1)
         self.ln(4)
 
-    def add_table(self, headers: list[str], rows: list[list[str]],
-                  col_widths: list[float] | None = None, font_size: int = 9,
-                  padding: float = 1.6):
+    def add_table(
+        self,
+        headers: list[str],
+        rows: list[list[str]],
+        col_widths: list[float] | None = None,
+        font_size: int = 9,
+        padding: float = 1.6,
+    ):
         """Render a grid table with wrapped cells and auto row heights.
 
         Rows are never split across pages: if a row does not fit, the whole
@@ -355,13 +378,24 @@ class AcademicPDF(FPDF):
         line_h = font_size * 1.35 * 0.3528
         cell_pad = padding * 2
 
-        header_lines = [self._wrap_text(str(h), w - cell_pad) for h, w in zip(headers, col_widths)]
+        header_lines = [
+            self._wrap_text(str(h), w - cell_pad) for h, w in zip(headers, col_widths, strict=False)
+        ]
         header_h = max(len(ls) for ls in header_lines) * line_h + cell_pad
 
         def draw_header():
-            self._draw_table_row(headers, col_widths, header_lines, header_h, line_h,
-                                 cell_pad, font_size, fill=self.XP_BLUE,
-                                 text_color=(255, 255, 255), font_style="B")
+            self._draw_table_row(
+                headers,
+                col_widths,
+                header_lines,
+                header_h,
+                line_h,
+                cell_pad,
+                font_size,
+                fill=self.XP_BLUE,
+                text_color=(255, 255, 255),
+                font_style="B",
+            )
 
         # Temporarily disable auto page-break so fpdf2 never splits a row on us.
         self.set_auto_page_break(False)
@@ -372,7 +406,10 @@ class AcademicPDF(FPDF):
 
             for ridx, row in enumerate(rows):
                 cells = [str(row[i]) if i < len(row) else "" for i in range(n)]
-                cell_lines = [self._wrap_text(c, w - cell_pad) for c, w in zip(cells, col_widths)]
+                cell_lines = [
+                    self._wrap_text(c, w - cell_pad)
+                    for c, w in zip(cells, col_widths, strict=False)
+                ]
                 row_h = max(len(ls) for ls in cell_lines) * line_h + cell_pad
 
                 if self.get_y() + row_h > self.h - 25:
@@ -380,20 +417,40 @@ class AcademicPDF(FPDF):
                     draw_header()
 
                 fill = (245, 247, 250) if ridx % 2 == 1 else (255, 255, 255)
-                self._draw_table_row(cells, col_widths, cell_lines, row_h, line_h,
-                                     cell_pad, font_size, fill=fill,
-                                     text_color=(0, 0, 0), font_style="")
+                self._draw_table_row(
+                    cells,
+                    col_widths,
+                    cell_lines,
+                    row_h,
+                    line_h,
+                    cell_pad,
+                    font_size,
+                    fill=fill,
+                    text_color=(0, 0, 0),
+                    font_style="",
+                )
             self.ln(2)
         finally:
             self.set_auto_page_break(True, 20)
 
-    def _draw_table_row(self, cells, col_widths, cell_lines, row_h, line_h,
-                        cell_pad, font_size, fill, text_color, font_style):
+    def _draw_table_row(
+        self,
+        cells,
+        col_widths,
+        cell_lines,
+        row_h,
+        line_h,
+        cell_pad,
+        font_size,
+        fill,
+        text_color,
+        font_style,
+    ):
         y0 = self.get_y()
         x = self.l_margin
         self.set_draw_color(*self.GRID_COLOR)
         self.set_line_width(0.2)
-        for w, lines in zip(col_widths, cell_lines):
+        for w, lines in zip(col_widths, cell_lines, strict=False):
             self.set_fill_color(*fill)
             self.rect(x, y0, w, row_h, "DF")
             self._set_style(font_style, font_size, text_color)
@@ -417,7 +474,9 @@ class AcademicPDF(FPDF):
             self.ln(1)
 
 
-def _build_content(item: dict, selected_fields: list[str], field_labels: dict[str, str]) -> list[str]:
+def _build_content(
+    item: dict, selected_fields: list[str], field_labels: dict[str, str]
+) -> list[str]:
     content = []
     for field in selected_fields:
         if field in item and item[field]:
@@ -451,10 +510,12 @@ def generate_pdf_report(
     def sections_for(items):
         out = []
         for item in items:
-            out.append((
-                item.get("title", item.get("名称", "Untitled")),
-                _build_content(item, selected_fields, field_labels),
-            ))
+            out.append(
+                (
+                    item.get("title", item.get("名称", "Untitled")),
+                    _build_content(item, selected_fields, field_labels),
+                )
+            )
         return out
 
     def references_for(items):
@@ -549,8 +610,9 @@ def generate_daily_pdf_report(
             link = str(it.get("link") or it.get("原文链接", ""))
             date = str(it.get("date", ""))
             rows.append([str(idx), title, date, link])
-        pdf.add_table(["#", "标题", "日期", "链接"], rows,
-                      col_widths=[0.05, 0.40, 0.15, 0.40], font_size=8)
+        pdf.add_table(
+            ["#", "标题", "日期", "链接"], rows, col_widths=[0.05, 0.40, 0.15, 0.40], font_size=8
+        )
 
     pdf.output(filepath)
     return filepath

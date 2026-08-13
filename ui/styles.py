@@ -12,44 +12,36 @@ XP_INPUT_BORDER = "#7F9DB9"
 
 # Reusable gradients
 _TITLEBAR = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #0054E3, stop:0.5 #0046C0, stop:1 #003399)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #0054E3, stop:0.5 #0046C0, stop:1 #003399)"
 )
 _TASKPANE = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #7BA2E7, stop:0.6 #5B8BD8, stop:1 #3B6FC4)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #7BA2E7, stop:0.6 #5B8BD8, stop:1 #3B6FC4)"
 )
 _BTN_BLUE = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
     "stop:0 #9FDFFF, stop:0.45 #3D8EF3, stop:0.5 #2E6BD8, stop:1 #1B4FA5)"
 )
 _BTN_BLUE_PRESSED = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #1B4FA5, stop:0.5 #2E6BD8, stop:1 #3D8EF3)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #1B4FA5, stop:0.5 #2E6BD8, stop:1 #3D8EF3)"
 )
 _BTN_BEIGE = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #FFFFFF, stop:0.5 #F1F0EB, stop:1 #E5E1D8)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #FFFFFF, stop:0.5 #F1F0EB, stop:1 #E5E1D8)"
 )
 _BTN_BEIGE_PRESSED = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #E0DCCB, stop:0.5 #ECE8DC, stop:1 #F4F1E6)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #E0DCCB, stop:0.5 #ECE8DC, stop:1 #F4F1E6)"
 )
 _HEADER_BAR = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #FFFFFF, stop:0.5 #F5F4EE, stop:1 #D8D6CB)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #FFFFFF, stop:0.5 #F5F4EE, stop:1 #D8D6CB)"
 )
 _SCROLL_HANDLE = (
     "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
     "stop:0 #F0F5FF, stop:0.45 #C6D8F2, stop:0.5 #A9BFE4, stop:1 #7F9DB9)"
 )
 _CHECKED_BLUE = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #8FC3FF, stop:0.5 #4A8FE8, stop:1 #1B6AC9)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #8FC3FF, stop:0.5 #4A8FE8, stop:1 #1B6AC9)"
 )
 _PROGRESS_CHUNK = (
-    "qlineargradient(x1:0, y1:0, x2:0, y2:1, "
-    "stop:0 #8BE07C, stop:0.5 #4BB84B, stop:1 #2E9E2E)"
+    "qlineargradient(x1:0, y1:0, x2:0, y2:1, " "stop:0 #8BE07C, stop:0.5 #4BB84B, stop:1 #2E9E2E)"
 )
 
 GLOBAL_STYLE = f"""

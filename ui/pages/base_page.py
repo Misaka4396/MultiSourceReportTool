@@ -1,16 +1,29 @@
 """Base page class with common UI elements for all modules."""
 
 import os
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox,
-    QPushButton, QLineEdit, QGroupBox, QFileDialog, QScrollArea,
-    QFrame, QMessageBox, QRadioButton, QButtonGroup, QToolButton, QMenu,
-)
-from PyQt5.QtCore import Qt, pyqtSignal, QDate
-from PyQt5.QtGui import QFont
 
-from report.txt_writer import generate_txt_report
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QButtonGroup,
+    QCheckBox,
+    QFileDialog,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QRadioButton,
+    QScrollArea,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
+
 from report.pdf_writer import generate_pdf_report
+from report.txt_writer import generate_txt_report
 
 
 class BasePage(QWidget):

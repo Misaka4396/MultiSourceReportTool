@@ -1,25 +1,28 @@
 """Fetcher for Sci-Hub / Crossref DOI metadata retrieval."""
 
-import random
-import requests
 from .base import BaseFetcher
-
 
 MOCK_DOI_DATA = {
     "10.1038/nature12373": {
         "title": "A statin-dependent QTL for cardiovascular disease",
         "authors": "Kathiresan S, et al.",
-        "journal": "Nature", "year": "2013", "publisher": "Nature Publishing Group",
+        "journal": "Nature",
+        "year": "2013",
+        "publisher": "Nature Publishing Group",
     },
     "10.1126/science.aad0919": {
         "title": "Observation of Gravitational Waves from a Binary Black Hole Merger",
         "authors": "Abbott BP, et al. (LIGO Scientific Collaboration and Virgo Collaboration)",
-        "journal": "Science", "year": "2016", "publisher": "AAAS",
+        "journal": "Science",
+        "year": "2016",
+        "publisher": "AAAS",
     },
     "10.1016/j.cell.2020.02.007": {
         "title": "Structure of the SARS-CoV-2 Spike Glycoprotein in the Prefusion Conformation",
         "authors": "Wrapp D, Wang N, Corbett KS, et al.",
-        "journal": "Cell", "year": "2020", "publisher": "Elsevier",
+        "journal": "Cell",
+        "year": "2020",
+        "publisher": "Elsevier",
     },
 }
 
@@ -31,7 +34,9 @@ class SciHubFetcher(BaseFetcher):
 
     # Known Sci-Hub mirrors (for user reference only)
     SCIHUB_MIRRORS = [
-        "sci-hub.se", "sci-hub.st", "sci-hub.ru",
+        "sci-hub.se",
+        "sci-hub.st",
+        "sci-hub.ru",
     ]
 
     def fetch(self, doi_list: list[str]) -> list[dict]:
@@ -56,14 +61,17 @@ class SciHubFetcher(BaseFetcher):
                 msg = data.get("message", {})
                 authors_list = msg.get("author", [])
                 authors = ", ".join(
-                    f"{a.get('given', '')} {a.get('family', '')}".strip()
-                    for a in authors_list[:5]
+                    f"{a.get('given', '')} {a.get('family', '')}".strip() for a in authors_list[:5]
                 )
                 title_list = msg.get("title", [doi])
                 title = title_list[0] if title_list else doi
                 journal = ""
                 if "container-title" in msg and msg["container-title"]:
-                    journal = msg["container-title"][0] if isinstance(msg["container-title"], list) else msg["container-title"]
+                    journal = (
+                        msg["container-title"][0]
+                        if isinstance(msg["container-title"], list)
+                        else msg["container-title"]
+                    )
 
                 year = str(msg.get("created", {}).get("date-parts", [[None]])[0][0] or "")
                 publisher = msg.get("publisher", "")

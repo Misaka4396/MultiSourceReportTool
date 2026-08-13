@@ -1,7 +1,9 @@
 """Generate anime-style icon for MultiSourceReportTool."""
+
+import io
 import math
 import struct
-import io
+
 from PIL import Image, ImageDraw, ImageFilter
 
 SIZE = 256
@@ -22,13 +24,14 @@ def create_icon(size: int) -> Image.Image:
             if dist <= r:
                 t = dist / r
                 # Pink (#f472b6) -> Purple (#a78bfa) -> darker at edges
-                rr = int(244 - 80 * t - 30 * (t ** 2))
-                gg = int(114 + 25 * t - 40 * (t ** 2))
-                bb = int(182 - 40 * t + 70 * (t ** 2))
+                rr = int(244 - 80 * t - 30 * (t**2))
+                gg = int(114 + 25 * t - 40 * (t**2))
+                bb = int(182 - 40 * t + 70 * (t**2))
                 alpha = 255
-                img.putpixel((x, y), (max(0, min(255, rr)),
-                                        max(0, min(255, gg)),
-                                        max(0, min(255, bb)), alpha))
+                img.putpixel(
+                    (x, y),
+                    (max(0, min(255, rr)), max(0, min(255, gg)), max(0, min(255, bb)), alpha),
+                )
 
     # --- Soft blur background ---
     img = img.filter(ImageFilter.GaussianBlur(radius=2))
@@ -38,8 +41,9 @@ def create_icon(size: int) -> Image.Image:
     # --- White inner circle for depth ---
     inner_r = max(1, r - 12)
     if inner_r > 0:
-        draw.ellipse([cx - inner_r, cy - inner_r, cx + inner_r, cy + inner_r],
-                     fill=(255, 255, 255, 40))
+        draw.ellipse(
+            [cx - inner_r, cy - inner_r, cx + inner_r, cy + inner_r], fill=(255, 255, 255, 40)
+        )
 
     # --- Cute document body (rounded rect) ---
     doc_w, doc_h = 90, 110
@@ -49,12 +53,17 @@ def create_icon(size: int) -> Image.Image:
     doc_y2 = cy + doc_h / 2 - 8
 
     # Document shadow
-    draw.rounded_rectangle([doc_x1 + 3, doc_y1 + 3, doc_x2 + 3, doc_y2 + 3],
-                           radius=12, fill=(0, 0, 0, 50))
+    draw.rounded_rectangle(
+        [doc_x1 + 3, doc_y1 + 3, doc_x2 + 3, doc_y2 + 3], radius=12, fill=(0, 0, 0, 50)
+    )
     # Document body - white with slight pink tint
-    draw.rounded_rectangle([doc_x1, doc_y1, doc_x2, doc_y2],
-                           radius=12, fill=(255, 250, 252, 255),
-                           outline=(236, 180, 200, 255), width=2)
+    draw.rounded_rectangle(
+        [doc_x1, doc_y1, doc_x2, doc_y2],
+        radius=12,
+        fill=(255, 250, 252, 255),
+        outline=(236, 180, 200, 255),
+        width=2,
+    )
 
     # --- Document lines (text lines look) ---
     line_color = (220, 200, 210, 200)
@@ -63,8 +72,7 @@ def create_icon(size: int) -> Image.Image:
         ly = line_y_start + i * 14
         line_w = doc_w - 30 if i < 4 else doc_w - 50
         lx1 = doc_x1 + 15
-        draw.rounded_rectangle([lx1, ly, lx1 + line_w, ly + 5],
-                               radius=2, fill=line_color)
+        draw.rounded_rectangle([lx1, ly, lx1 + line_w, ly + 5], radius=2, fill=line_color)
 
     # --- Glasses / cute eyes on the document ---
     eye_y = doc_y1 + 36
@@ -86,8 +94,9 @@ def create_icon(size: int) -> Image.Image:
 
     # --- Small mouth ---
     mouth_y = blush_y + 8
-    draw.arc([cx - 5, mouth_y, cx + 5, mouth_y + 8],
-             start=0, end=180, fill=(200, 130, 150, 180), width=2)
+    draw.arc(
+        [cx - 5, mouth_y, cx + 5, mouth_y + 8], start=0, end=180, fill=(200, 130, 150, 180), width=2
+    )
 
     # --- Sparkle decorations ---
     sparkle_positions = [
@@ -121,8 +130,7 @@ def create_icon(size: int) -> Image.Image:
     # --- Outer glow ring ---
     glow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     glow_d = ImageDraw.Draw(glow)
-    glow_d.ellipse([cx - r, cy - r, cx + r, cy + r],
-                   outline=(255, 200, 220, 80), width=3)
+    glow_d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(255, 200, 220, 80), width=3)
     glow = glow.filter(ImageFilter.GaussianBlur(radius=4))
     img = Image.alpha_composite(img, glow)
 
@@ -132,46 +140,60 @@ def create_icon(size: int) -> Image.Image:
 def _draw_anime_eye(draw, cx, cy, size):
     """Draw a single anime-style eye."""
     # White base
-    draw.ellipse([cx - size, cy - size * 0.9, cx + size, cy + size * 0.9],
-                 fill=(255, 255, 255, 255),
-                 outline=(120, 100, 110, 255), width=2)
+    draw.ellipse(
+        [cx - size, cy - size * 0.9, cx + size, cy + size * 0.9],
+        fill=(255, 255, 255, 255),
+        outline=(120, 100, 110, 255),
+        width=2,
+    )
     # Iris (large pupil - anime style)
     iris_r = size * 0.7
-    draw.ellipse([cx - iris_r, cy - iris_r * 0.7, cx + iris_r, cy + iris_r * 0.7],
-                 fill=(80, 60, 90, 255))
+    draw.ellipse(
+        [cx - iris_r, cy - iris_r * 0.7, cx + iris_r, cy + iris_r * 0.7], fill=(80, 60, 90, 255)
+    )
     # Pupil
     pupil_r = size * 0.4
-    draw.ellipse([cx - pupil_r, cy - pupil_r * 0.6, cx + pupil_r, cy + pupil_r * 0.6],
-                 fill=(30, 20, 35, 255))
+    draw.ellipse(
+        [cx - pupil_r, cy - pupil_r * 0.6, cx + pupil_r, cy + pupil_r * 0.6], fill=(30, 20, 35, 255)
+    )
     # Highlight 1 (big)
-    hl_r = size * 0.35
-    draw.ellipse([cx - size * 0.2, cy - size * 0.35, cx + size * 0.5, cy + size * 0.35],
-                 fill=(255, 255, 255, 240))
+    draw.ellipse(
+        [cx - size * 0.2, cy - size * 0.35, cx + size * 0.5, cy + size * 0.35],
+        fill=(255, 255, 255, 240),
+    )
     # Highlight 2 (small)
-    hl2_r = size * 0.15
-    draw.ellipse([cx - size * 0.1, cy + size * 0.1, cx + size * 0.2, cy + size * 0.4],
-                 fill=(255, 255, 255, 150))
+    draw.ellipse(
+        [cx - size * 0.1, cy + size * 0.1, cx + size * 0.2, cy + size * 0.4],
+        fill=(255, 255, 255, 150),
+    )
     # Upper eyelid line (thicker)
-    draw.arc([cx - size - 1, cy - size * 0.7, cx + size + 1, cy + size * 0.3],
-             start=200, end=340, fill=(60, 45, 65, 255), width=2)
+    draw.arc(
+        [cx - size - 1, cy - size * 0.7, cx + size + 1, cy + size * 0.3],
+        start=200,
+        end=340,
+        fill=(60, 45, 65, 255),
+        width=2,
+    )
 
 
 def _draw_sparkle(draw, cx, cy, size):
     """Draw a four-point sparkle."""
     points = [
-        (cx, cy - size),        # top
+        (cx, cy - size),  # top
         (cx + size * 0.35, cy - size * 0.2),  # right-inner-top
-        (cx + size, cy),        # right
+        (cx + size, cy),  # right
         (cx + size * 0.35, cy + size * 0.2),  # right-inner-bottom
-        (cx, cy + size),        # bottom
+        (cx, cy + size),  # bottom
         (cx - size * 0.35, cy + size * 0.2),  # left-inner-bottom
-        (cx - size, cy),        # left
+        (cx - size, cy),  # left
         (cx - size * 0.35, cy - size * 0.2),  # left-inner-top
     ]
     draw.polygon(points, fill=(255, 255, 255, 230))
     # Center glow
-    draw.ellipse([cx - size * 0.15, cy - size * 0.15, cx + size * 0.15, cy + size * 0.15],
-                 fill=(255, 255, 255, 255))
+    draw.ellipse(
+        [cx - size * 0.15, cy - size * 0.15, cx + size * 0.15, cy + size * 0.15],
+        fill=(255, 255, 255, 255),
+    )
 
 
 def _draw_star(draw, cx, cy, size, color):
@@ -200,7 +222,7 @@ def save_multi_ico(images, sizes, filepath):
     entries = b""
     data = b""
 
-    for size, png in zip(sizes, png_list):
+    for size, png in zip(sizes, png_list, strict=False):
         w, h = size
         if w >= 256:
             w = 0

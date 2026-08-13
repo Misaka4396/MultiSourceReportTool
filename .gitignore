@@ -26,3 +26,13 @@ Thumbs.db
 *.egg-info/
 .env
 venv/
+
+# 测试/工具链缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 文章抓取产物
+out/

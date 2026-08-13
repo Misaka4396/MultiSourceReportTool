@@ -15,11 +15,10 @@ Requirements:
 """
 
 import sys
-import os
 
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QApplication
 
 from ui.main_window import MainWindow
 

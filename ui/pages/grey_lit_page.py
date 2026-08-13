@@ -1,12 +1,17 @@
 """Page 4: Grey literature search."""
 
-from PyQt5.QtWidgets import (
-    QLabel, QComboBox, QDateEdit, QLineEdit, QCheckBox, QHBoxLayout,
-)
 from PyQt5.QtCore import QDate, QThread, pyqtSignal
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QDateEdit,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+)
+
+from fetchers.grey_lit import MOCK_GREY_DATA, GreyLiteratureFetcher
 
 from .base_page import BasePage
-from fetchers.grey_lit import GreyLiteratureFetcher, MOCK_GREY_DATA
 
 
 class _FetchThread(QThread):
@@ -137,4 +142,3 @@ class GreyLitPage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

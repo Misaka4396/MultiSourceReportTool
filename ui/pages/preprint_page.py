@@ -1,10 +1,11 @@
 """Page 5: Preprint platform search (arXiv, SSRN)."""
 
-from PyQt5.QtWidgets import QLabel, QComboBox, QLineEdit, QCheckBox, QHBoxLayout
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QHBoxLayout, QLabel, QLineEdit
+
+from fetchers.preprint import MOCK_PREPRINT_DATA, PreprintFetcher
 
 from .base_page import BasePage
-from fetchers.preprint import PreprintFetcher, MOCK_PREPRINT_DATA
 
 
 class _FetchThread(QThread):
@@ -64,10 +65,21 @@ class PreprintPage(BasePage):
 
         # Category
         self.cat_combo = QComboBox()
-        self.cat_combo.addItems([
-            "全部", "计算机科学", "经济学", "物理学", "数学", "生物学", "统计学",
-            "金融学", "电子工程", "化学", "材料科学",
-        ])
+        self.cat_combo.addItems(
+            [
+                "全部",
+                "计算机科学",
+                "经济学",
+                "物理学",
+                "数学",
+                "生物学",
+                "统计学",
+                "金融学",
+                "电子工程",
+                "化学",
+                "材料科学",
+            ]
+        )
         self.add_constraint_row("学科分类：", self.cat_combo)
 
         # Keywords
@@ -79,9 +91,7 @@ class PreprintPage(BasePage):
         time_row = QHBoxLayout()
         time_row.addWidget(QLabel("时间限定："))
         self.time_combo = QComboBox()
-        self.time_combo.addItems([
-            "since 2026", "2025-2026", "2024-2026", "2020-2026", "不限时间"
-        ])
+        self.time_combo.addItems(["since 2026", "2025-2026", "2024-2026", "2020-2026", "不限时间"])
         time_row.addWidget(self.time_combo)
         time_row.addStretch()
         self.constraints_layout.addLayout(time_row)
@@ -114,4 +124,3 @@ class PreprintPage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

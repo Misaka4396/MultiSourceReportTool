@@ -1,50 +1,100 @@
 """Fetcher for Library Genesis book search (mock with realistic data)."""
 
-import random
 from .base import BaseFetcher
 
-
 MOCK_BOOK_DATA = [
-    {"title": "Deep Learning", "authors": "Ian Goodfellow, Yoshua Bengio, Aaron Courville",
-     "publisher": "MIT Press", "year": "2016", "isbn": "978-0262035613",
-     "language": "English", "format": "PDF", "size": "18.5 MB",
-     "mirrors": ["https://libgen.is/book/1234001", "https://libgen.st/book/1234001",
-                 "https://libgen.rs/book/1234001"],
-     "description": "An comprehensive introduction to deep learning covering mathematical foundations, modern practices, and research perspectives."},
-    {"title": "Pattern Recognition and Machine Learning", "authors": "Christopher M. Bishop",
-     "publisher": "Springer", "year": "2006", "isbn": "978-0387310732",
-     "language": "English", "format": "PDF", "size": "8.2 MB",
-     "mirrors": ["https://libgen.is/book/2345002", "https://libgen.st/book/2345002"],
-     "description": "The classic graduate-level textbook on probabilistic approaches to machine learning and pattern recognition."},
-    {"title": "统计学习方法 (第二版)", "authors": "李航",
-     "publisher": "清华大学出版社", "year": "2019", "isbn": "978-7302495697",
-     "language": "中文", "format": "PDF", "size": "12.1 MB",
-     "mirrors": ["https://libgen.is/book/3456003", "https://libgen.rs/book/3456003"],
-     "description": "系统介绍统计学习的主要方法，包括感知机、k近邻、朴素贝叶斯、决策树、逻辑回归、支持向量机、提升方法、EM算法、隐马尔可夫模型等。"},
-    {"title": "Reinforcement Learning: An Introduction (2nd Edition)",
-     "authors": "Richard S. Sutton, Andrew G. Barto", "publisher": "MIT Press",
-     "year": "2018", "isbn": "978-0262039246", "language": "English",
-     "format": "PDF", "size": "14.3 MB",
-     "mirrors": ["https://libgen.is/book/4567004", "https://libgen.st/book/4567004",
-                 "https://libgen.rs/book/4567004"],
-     "description": "The definitive textbook on reinforcement learning, covering bandits, MDPs, dynamic programming, Monte Carlo methods, TD learning, and deep RL."},
-    {"title": "The Elements of Statistical Learning (2nd Edition)",
-     "authors": "Trevor Hastie, Robert Tibshirani, Jerome Friedman",
-     "publisher": "Springer", "year": "2009", "isbn": "978-0387848570",
-     "language": "English", "format": "PDF", "size": "12.8 MB",
-     "mirrors": ["https://libgen.is/book/5678005", "https://libgen.st/book/5678005"],
-     "description": "A comprehensive treatment of statistical learning methods including linear models, kernel methods, model assessment, boosting, random forests, and neural networks."},
-    {"title": "自然语言处理综论 (Speech and Language Processing)", "authors": "Daniel Jurafsky, James H. Martin",
-     "publisher": "Prentice Hall", "year": "2023", "isbn": "978-0131873216",
-     "language": "English", "format": "PDF", "size": "22.0 MB",
-     "mirrors": ["https://libgen.is/book/6789006"],
-     "description": "The most comprehensive textbook on NLP, covering from traditional methods to modern transformer-based architectures and large language models."},
-    {"title": "算法导论 (Introduction to Algorithms, 4th Edition)",
-     "authors": "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
-     "publisher": "MIT Press", "year": "2022", "isbn": "978-0262046305",
-     "language": "English", "format": "PDF", "size": "15.6 MB",
-     "mirrors": ["https://libgen.is/book/7890007", "https://libgen.rs/book/7890007"],
-     "description": "The definitive reference on algorithms, updated with new chapters on machine learning algorithms, online algorithms, and parallel algorithms."},
+    {
+        "title": "Deep Learning",
+        "authors": "Ian Goodfellow, Yoshua Bengio, Aaron Courville",
+        "publisher": "MIT Press",
+        "year": "2016",
+        "isbn": "978-0262035613",
+        "language": "English",
+        "format": "PDF",
+        "size": "18.5 MB",
+        "mirrors": [
+            "https://libgen.is/book/1234001",
+            "https://libgen.st/book/1234001",
+            "https://libgen.rs/book/1234001",
+        ],
+        "description": "An comprehensive introduction to deep learning covering mathematical foundations, modern practices, and research perspectives.",
+    },
+    {
+        "title": "Pattern Recognition and Machine Learning",
+        "authors": "Christopher M. Bishop",
+        "publisher": "Springer",
+        "year": "2006",
+        "isbn": "978-0387310732",
+        "language": "English",
+        "format": "PDF",
+        "size": "8.2 MB",
+        "mirrors": ["https://libgen.is/book/2345002", "https://libgen.st/book/2345002"],
+        "description": "The classic graduate-level textbook on probabilistic approaches to machine learning and pattern recognition.",
+    },
+    {
+        "title": "统计学习方法 (第二版)",
+        "authors": "李航",
+        "publisher": "清华大学出版社",
+        "year": "2019",
+        "isbn": "978-7302495697",
+        "language": "中文",
+        "format": "PDF",
+        "size": "12.1 MB",
+        "mirrors": ["https://libgen.is/book/3456003", "https://libgen.rs/book/3456003"],
+        "description": "系统介绍统计学习的主要方法，包括感知机、k近邻、朴素贝叶斯、决策树、逻辑回归、支持向量机、提升方法、EM算法、隐马尔可夫模型等。",
+    },
+    {
+        "title": "Reinforcement Learning: An Introduction (2nd Edition)",
+        "authors": "Richard S. Sutton, Andrew G. Barto",
+        "publisher": "MIT Press",
+        "year": "2018",
+        "isbn": "978-0262039246",
+        "language": "English",
+        "format": "PDF",
+        "size": "14.3 MB",
+        "mirrors": [
+            "https://libgen.is/book/4567004",
+            "https://libgen.st/book/4567004",
+            "https://libgen.rs/book/4567004",
+        ],
+        "description": "The definitive textbook on reinforcement learning, covering bandits, MDPs, dynamic programming, Monte Carlo methods, TD learning, and deep RL.",
+    },
+    {
+        "title": "The Elements of Statistical Learning (2nd Edition)",
+        "authors": "Trevor Hastie, Robert Tibshirani, Jerome Friedman",
+        "publisher": "Springer",
+        "year": "2009",
+        "isbn": "978-0387848570",
+        "language": "English",
+        "format": "PDF",
+        "size": "12.8 MB",
+        "mirrors": ["https://libgen.is/book/5678005", "https://libgen.st/book/5678005"],
+        "description": "A comprehensive treatment of statistical learning methods including linear models, kernel methods, model assessment, boosting, random forests, and neural networks.",
+    },
+    {
+        "title": "自然语言处理综论 (Speech and Language Processing)",
+        "authors": "Daniel Jurafsky, James H. Martin",
+        "publisher": "Prentice Hall",
+        "year": "2023",
+        "isbn": "978-0131873216",
+        "language": "English",
+        "format": "PDF",
+        "size": "22.0 MB",
+        "mirrors": ["https://libgen.is/book/6789006"],
+        "description": "The most comprehensive textbook on NLP, covering from traditional methods to modern transformer-based architectures and large language models.",
+    },
+    {
+        "title": "算法导论 (Introduction to Algorithms, 4th Edition)",
+        "authors": "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein",
+        "publisher": "MIT Press",
+        "year": "2022",
+        "isbn": "978-0262046305",
+        "language": "English",
+        "format": "PDF",
+        "size": "15.6 MB",
+        "mirrors": ["https://libgen.is/book/7890007", "https://libgen.rs/book/7890007"],
+        "description": "The definitive reference on algorithms, updated with new chapters on machine learning algorithms, online algorithms, and parallel algorithms.",
+    },
 ]
 
 
@@ -56,8 +106,9 @@ class LibGenFetcher(BaseFetcher):
         "https://libgen.st",
     ]
 
-    def fetch(self, title: str, author: str, isbn: str, language: str,
-              formats: list[str]) -> tuple[list[dict], bool]:
+    def fetch(
+        self, title: str, author: str, isbn: str, language: str, formats: list[str]
+    ) -> tuple[list[dict], bool]:
         """Search for books. Returns (data, is_mock)."""
         self.use_mock = False
         results = []
@@ -113,14 +164,20 @@ class LibGenFetcher(BaseFetcher):
                 publisher_text = cells[3].get_text(strip=True) if len(cells) > 3 else ""
                 year_text = cells[4].get_text(strip=True) if len(cells) > 4 else ""
                 size_text = cells[7].get_text(strip=True) if len(cells) > 7 else ""
-                results.append({
-                    "title": title_text, "authors": author_text,
-                    "publisher": publisher_text, "year": year_text,
-                    "isbn": "", "language": "", "format": "PDF",
-                    "size": size_text,
-                    "mirrors": [f"https://libgen.is/book/{i}" for i in range(1, 4)],
-                    "description": "",
-                })
+                results.append(
+                    {
+                        "title": title_text,
+                        "authors": author_text,
+                        "publisher": publisher_text,
+                        "year": year_text,
+                        "isbn": "",
+                        "language": "",
+                        "format": "PDF",
+                        "size": size_text,
+                        "mirrors": [f"https://libgen.is/book/{i}" for i in range(1, 4)],
+                        "description": "",
+                    }
+                )
             except Exception:
                 continue
         return results

@@ -1,12 +1,17 @@
 """Page 7: Library Genesis book search."""
 
-from PyQt5.QtWidgets import (
-    QLabel, QComboBox, QLineEdit, QCheckBox, QHBoxLayout,
-)
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+)
+
+from fetchers.libgen import MOCK_BOOK_DATA, LibGenFetcher
 
 from .base_page import BasePage
-from fetchers.libgen import LibGenFetcher, MOCK_BOOK_DATA
 
 
 class _FetchThread(QThread):
@@ -93,7 +98,9 @@ class LibGenPage(BasePage):
             "（如 libgen.is, libgen.st, libgen.rs）。\n"
             "请遵守当地版权法规，仅下载您有权获取的内容。"
         )
-        notice.setStyleSheet("color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;")
+        notice.setStyleSheet(
+            "color: #5A5A5A; font-size: 11px; padding-top: 8px; background: transparent;"
+        )
         notice.setWordWrap(True)
         self.constraints_layout.addWidget(notice)
 
@@ -135,4 +142,3 @@ class LibGenPage(BasePage):
         self.thread.progress.connect(self.set_progress)
         self.thread.finished.connect(lambda data, mock: self.generate_report(data, mock))
         self.thread.start()
-

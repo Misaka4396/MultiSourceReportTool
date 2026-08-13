@@ -2,25 +2,40 @@
 
 import os
 from datetime import datetime
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QStackedWidget, QStatusBar, QFrame, QDialog,
-    QCheckBox, QLineEdit, QFileDialog, QMessageBox,
-    QButtonGroup, QGridLayout, QMenu, QTimeEdit, QGroupBox,
-)
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QBrush, QPalette
 
-from .styles import GLOBAL_STYLE
-from .daily_service import DailyReportService, MODULE_SPECS
-from .pages.consulting_page import ConsultingPage
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QBrush, QPalette, QPixmap
+from PyQt5.QtWidgets import (
+    QButtonGroup,
+    QCheckBox,
+    QDialog,
+    QFileDialog,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QStackedWidget,
+    QStatusBar,
+    QTimeEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
+from .daily_service import MODULE_SPECS, DailyReportService
 from .pages.brokerage_page import BrokeragePage
-from .pages.hs_code_page import HSCodePage
+from .pages.consulting_page import ConsultingPage
 from .pages.grey_lit_page import GreyLitPage
+from .pages.hs_code_page import HSCodePage
+from .pages.libgen_page import LibGenPage
 from .pages.preprint_page import PreprintPage
 from .pages.scihub_page import SciHubPage
-from .pages.libgen_page import LibGenPage
-
+from .styles import GLOBAL_STYLE
 
 NAV_ITEMS = [
     ("consulting", "顶级咨询公司报告", "🏢", "#3b82f6"),
@@ -370,9 +385,10 @@ class MainWindow(QMainWindow):
     def _choose_background(self):
         """Open file dialog to select a background image."""
         path, _ = QFileDialog.getOpenFileName(
-            self, "选择背景图片",
+            self,
+            "选择背景图片",
             os.path.expanduser("~/Pictures"),
-            "图片文件 (*.png *.jpg *.jpeg *.bmp *.gif *.webp);;所有文件 (*.*)"
+            "图片文件 (*.png *.jpg *.jpeg *.bmp *.gif *.webp);;所有文件 (*.*)",
         )
         if not path:
             return
