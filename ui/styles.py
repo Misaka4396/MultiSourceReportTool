@@ -584,6 +584,26 @@ QDialog {{
     background-color: {XP_BEIGE};
 }}
 
+/* ===== About Dialog ===== */
+#aboutVersion {{
+    font-size: 15px;
+    font-weight: bold;
+    color: {XP_ACCENT};
+    padding: 2px;
+}}
+
+#aboutDesc {{
+    font-size: 12px;
+    color: #404040;
+    padding: 4px 12px;
+}}
+
+#aboutLicense {{
+    font-size: 10px;
+    color: #808080;
+    padding: 2px;
+}}
+
 /* ===== Message Box ===== */
 QMessageBox {{
     background-color: {XP_BEIGE};

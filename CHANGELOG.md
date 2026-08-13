@@ -8,6 +8,7 @@
 - feat: 文章抓取模块（`article_grab/`）— trafilatura + httpx 正文提取（标题/作者/日期/站点/正文），请求重试 + 真实浏览器头，文件名净化（防路径穿越）
 - feat: **维基百科 API 适配器** — 词条页 HTML 反爬 403 时自动走官方 REST API（支持 zh/en/ja/fr/de/ru/es 7 语言）
 - feat: 文章抓取 PDF 日报（`article_grab/grabber.py --pdf`）— 封面/目录/分节，中文字体自动适配，防文字挤压排版（中英分段换行 + 超长 URL 逐字符硬断）
+- feat: 关于对话框（顶部栏「关于」）— 项目名称/版本/简介/GitHub 链接/License（XP 风格）
 - test: 26 个 pytest 用例（单元 + 集成，含 PDF 重叠/溢出逐词检测、维基 API 适配器、HTTP mock 替身）
 
 ### 工程化

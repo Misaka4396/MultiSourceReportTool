@@ -233,6 +233,13 @@ class MainWindow(QMainWindow):
 
         top_layout.addStretch()
 
+        # About button
+        self.about_btn = QPushButton("  关于")
+        self.about_btn.setObjectName("bgSettingsButton")
+        self.about_btn.setCursor(Qt.PointingHandCursor)
+        self.about_btn.clicked.connect(self._open_about)
+        top_layout.addWidget(self.about_btn)
+
         # Background settings button
         self.bg_btn = QPushButton("  背景")
         self.bg_btn.setObjectName("bgSettingsButton")
@@ -426,3 +433,73 @@ class MainWindow(QMainWindow):
         super().resizeEvent(event)
         if self._bg_image_path:
             self._apply_background()
+
+    def _open_about(self):
+        """Show the About dialog."""
+        dlg = AboutDialog(self)
+        dlg.exec_()
+
+
+class AboutDialog(QDialog):
+    """About dialog — project info, version, links (XP style)."""
+
+    APP_NAME = "多源报告汇总推送工具"
+    VERSION = "v1.2.1"
+    DESCRIPTION = (
+        "一站式聚合 7 大类信息源的报告与数据，自动生成 TXT / PDF 学术风格报告。\n"
+        "内置日报本地生成服务、文章抓取模块、Windows XP 复古主题与自定义背景。"
+    )
+    GITHUB_URL = "https://github.com/Misaka4396/MultiSourceReportTool"
+    LICENSE = "MIT License — Copyright (c) 2026 Misaka4396"
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("关于")
+        self.setFixedWidth(460)
+        self._build_ui()
+
+    def _build_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+
+        title = QLabel(self.APP_NAME)
+        title.setObjectName("appTitle")
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        version = QLabel(self.VERSION)
+        version.setObjectName("aboutVersion")
+        version.setAlignment(Qt.AlignCenter)
+        layout.addWidget(version)
+
+        sep = QFrame()
+        sep.setObjectName("navSeparator")
+        layout.addWidget(sep)
+
+        desc = QLabel(self.DESCRIPTION)
+        desc.setWordWrap(True)
+        desc.setObjectName("aboutDesc")
+        desc.setAlignment(Qt.AlignCenter)
+        layout.addWidget(desc)
+
+        layout.addSpacing(4)
+
+        link = QLabel(f'<a href="{self.GITHUB_URL}" style="color:#1B6AC9;">{self.GITHUB_URL}</a>')
+        link.setOpenExternalLinks(True)
+        link.setAlignment(Qt.AlignCenter)
+        layout.addWidget(link)
+
+        license_label = QLabel(self.LICENSE)
+        license_label.setObjectName("aboutLicense")
+        license_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(license_label)
+
+        btn_row = QHBoxLayout()
+        ok_btn = QPushButton("确定")
+        ok_btn.setObjectName("successButton")
+        ok_btn.setCursor(Qt.PointingHandCursor)
+        ok_btn.clicked.connect(self.accept)
+        btn_row.addStretch()
+        btn_row.addWidget(ok_btn)
+        btn_row.addStretch()
+        layout.addLayout(btn_row)
